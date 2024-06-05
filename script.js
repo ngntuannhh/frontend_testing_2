@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     availableRoomsHTML += "<h2>Available Rooms</h2>";
                     data.forEach(room => {
-                        availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${room.type}&roomPrice=${room.price}">Choose</a></p>`;
+                        availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomId=${room.roomId}&roomType=${room.type}&roomPrice=${room.price}">Choose</a></p>`;
                     });
                 }
                 document.getElementById("availableRooms").innerHTML = availableRoomsHTML;
@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (document.getElementById("summary")) {
         var checkInDate = getUrlParameter('checkInDate');
         var checkOutDate = getUrlParameter('checkOutDate');
+        var roomId = getUrlParameter('roomId');
         var roomType = getUrlParameter('roomType');
         var roomPrice = getUrlParameter('roomPrice');
 
@@ -51,5 +52,62 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Check-out Date: ${checkOutDate}</p>
             <p>Room Type: ${roomType}</p>
             <p>Room Price: ${roomPrice}</p>`;
+
+        document.getElementById("customerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var firstName = document.getElementById("firstName").value;
+            var lastName = document.getElementById("lastName").value;
+
+            var reservationData = {
+                checkinDate: checkInDate,
+                checkoutDate: checkOutDate,
+                numberOfPersons: 2, // Assuming a static value, you may want to make this dynamic
+                customer: {
+                    name: firstName,
+                    lastName: lastName,
+                    customerId: 1 // Assuming a static customerId for simplicity, adjust as necessary
+                },
+                room: {
+                    type: roomType,
+                    price: roomPrice,
+                    roomId: roomId
+                }
+            };
+
+            fetch('http://localhost:8080/reservations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reservationData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.href = `confirmation.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${roomType}&roomPrice=${roomPrice}&firstName=${firstName}&lastName=${lastName}&reservationId=${data.reservationId}&bookingId=${data.bookingId}`;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // Handling confirmation.html
+    if (document.getElementById("confirmation")) {
+        var checkInDate = getUrlParameter('checkInDate');
+        var checkOutDate = getUrlParameter('checkOutDate');
+        var roomType = getUrlParameter('roomType');
+        var roomPrice = getUrlParameter('roomPrice');
+        var firstName = getUrlParameter('firstName');
+        var lastName = getUrlParameter('lastName');
+        var reservationId = getUrlParameter('reservationId');
+        var bookingId = getUrlParameter('bookingId');
+
+        document.getElementById("confirmation").innerHTML = `<h2>Booking Confirmation</h2>
+            <p>Thank you, ${firstName} ${lastName}!</p>
+            <p>Your booking details:</p>
+            <p>Check-in Date: ${checkInDate}</p>
+            <p>Check-out Date: ${checkOutDate}</p>
+            <p>Room Type: ${roomType}</p>
+            <p>Room Price: ${roomPrice}</p>
+            <p>Reservation ID: ${reservationId}</p>
+            <p>Booking ID: ${bookingId}</p>`;
     }
 });
