@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rooms</title>
+</head>
+<body>
+<h1>Available Rooms</h1>
+<div id="availableRooms"></div>
+
+<script>
+    // Function to parse URL parameters
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Retrieve dates from URL parameters
+    var checkInDate = getUrlParameter('checkInDate');
+    var checkOutDate = getUrlParameter('checkOutDate');
+
+    // Fetch available rooms using the provided dates
+    fetch(`http://localhost:8080/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`)
+        .then(response => response.json())
+        .then(data => {
+            var availableRoomsHTML = "";
+            if (data.length === 0) {
+                availableRoomsHTML = "<p>No available rooms for the selected dates.</p>";
+            } else {
+                availableRoomsHTML += "<h2>Available Rooms</h2>";
+                data.forEach(room => {
+                    availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price}</p>`;
+                });
+            }
+            document.getElementById("availableRooms").innerHTML = availableRoomsHTML;
+        })
+        .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>
