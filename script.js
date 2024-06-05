@@ -7,6 +7,7 @@ function getUrlParameter(name) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+    // Handling index.html form submission
     if (document.getElementById("availabilityForm")) {
         document.getElementById("availabilityForm").addEventListener("submit", function(event) {
             event.preventDefault();
@@ -14,7 +15,10 @@ document.addEventListener("DOMContentLoaded", function() {
             var checkOutDate = document.getElementById("checkOutDate").value;
             window.location.href = `results.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`;
         });
-    } else if (document.getElementById("availableRooms")) {
+    }
+
+    // Handling results.html
+    if (document.getElementById("availableRooms")) {
         var checkInDate = getUrlParameter('checkInDate');
         var checkOutDate = getUrlParameter('checkOutDate');
 
@@ -27,11 +31,25 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     availableRoomsHTML += "<h2>Available Rooms</h2>";
                     data.forEach(room => {
-                        availableRoomsHTML += `<p>Room ID: ${room.roomId}, Room Type: ${room.type}, Room Price: ${room.price}</p>`;
+                        availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${room.type}&roomPrice=${room.price}">Choose</a></p>`;
                     });
                 }
                 document.getElementById("availableRooms").innerHTML = availableRoomsHTML;
             })
             .catch(error => console.error('Error:', error));
+    }
+
+    // Handling summary.html
+    if (document.getElementById("summary")) {
+        var checkInDate = getUrlParameter('checkInDate');
+        var checkOutDate = getUrlParameter('checkOutDate');
+        var roomType = getUrlParameter('roomType');
+        var roomPrice = getUrlParameter('roomPrice');
+
+        document.getElementById("summary").innerHTML = `<h2>Room Summary</h2>
+            <p>Check-in Date: ${checkInDate}</p>
+            <p>Check-out Date: ${checkOutDate}</p>
+            <p>Room Type: ${roomType}</p>
+            <p>Room Price: ${roomPrice}</p>`;
     }
 });
