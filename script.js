@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Check-in Date: ${checkInDate}</p>
             <p>Check-out Date: ${checkOutDate}</p>
             <p>Room Type: ${roomType}</p>
-            <p>Room Price: ${roomPrice}</p>
+            <p>Room Price: CHF ${roomPrice}</p>
             <p>Number of Persons: ${numberOfPersons}</p>`;
 
         document.getElementById("customerForm").addEventListener("submit", function(event) {
@@ -110,9 +110,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Check-in Date: ${checkInDate}</p>
             <p>Check-out Date: ${checkOutDate}</p>
             <p>Room Type: ${roomType}</p>
-            <p>Room Price: ${roomPrice}</p>
+            <p>Room Price: CHF ${roomPrice}</p>
             <p>Number of Persons: ${numberOfPersons}</p>
-            <p>Total Price: ${totalPrice}</p>
+            <p>Total Price: CHF ${totalPrice}</p>
             <p>Booking ID: ${bookingId}</p>`;
     }
 });
