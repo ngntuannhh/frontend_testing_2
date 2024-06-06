@@ -31,7 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     availableRoomsHTML += "<h2>Available Rooms</h2>";
                     data.forEach(room => {
-                        availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomId=${room.roomId}&roomType=${room.type}&roomPrice=${room.price}">Choose</a></p>`;
+                        availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}
+                        &checkOutDate=${checkOutDate}&roomId=${room.roomId}&roomType=${room.type}&roomPrice=${room.price}">Choose</a></p>`;
                     });
                 }
                 document.getElementById("availableRooms").innerHTML = availableRoomsHTML;
@@ -64,8 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 numberOfPersons: 2, // Assuming a static value, you may want to make this dynamic
                 customer: {
                     name: firstName,
-                    lastName: lastName,
-                    customerId: 1 // Assuming a static customerId for simplicity, adjust as necessary
+                    lastName: lastName
                 },
                 room: {
                     type: roomType,
@@ -83,7 +83,8 @@ document.addEventListener("DOMContentLoaded", function() {
             })
                 .then(response => response.json())
                 .then(data => {
-                    window.location.href = `confirmation.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${roomType}&roomPrice=${roomPrice}&firstName=${firstName}&lastName=${lastName}&reservationId=${data.reservationId}&bookingId=${data.bookingId}`;
+                    window.location.href = `confirmation.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${roomType}
+                &roomPrice=${roomPrice}&firstName=${firstName}&lastName=${lastName}&reservationId=${data.reservationId}&bookingId=${data.bookingId}&totalPrice=${data.totalPrice}`;
                 })
                 .catch(error => console.error('Error:', error));
         });
@@ -94,11 +95,11 @@ document.addEventListener("DOMContentLoaded", function() {
         var checkInDate = getUrlParameter('checkInDate');
         var checkOutDate = getUrlParameter('checkOutDate');
         var roomType = getUrlParameter('roomType');
-        var roomPrice = getUrlParameter('roomPrice');
+        var roomPrice = parseFloat(getUrlParameter('roomPrice'));
         var firstName = getUrlParameter('firstName');
         var lastName = getUrlParameter('lastName');
-        var reservationId = getUrlParameter('reservationId');
         var bookingId = getUrlParameter('bookingId');
+        var totalPrice = parseFloat(getUrlParameter('totalPrice'));
 
         document.getElementById("confirmation").innerHTML = `<h2>Booking Confirmation</h2>
             <p>Thank you, ${firstName} ${lastName}!</p>
@@ -107,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Check-out Date: ${checkOutDate}</p>
             <p>Room Type: ${roomType}</p>
             <p>Room Price: ${roomPrice}</p>
-            <p>Reservation ID: ${reservationId}</p>
+            <p>Total Price: ${totalPrice}</p>
             <p>Booking ID: ${bookingId}</p>`;
     }
 });
