@@ -1,12 +1,12 @@
-// Function to parse URL parameters
-function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    var results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
-
 document.addEventListener("DOMContentLoaded", function() {
+    // Function to parse URL parameters
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
     // Handling index.html form submission
     if (document.getElementById("availabilityForm")) {
         document.getElementById("availabilityForm").addEventListener("submit", function(event) {
@@ -27,14 +27,26 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch(`http://localhost:8080/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`)
             .then(response => response.json())
             .then(data => {
+                var roomsByCategory = {};
+                data.forEach(room => {
+                    if (!roomsByCategory[room.type]) {
+                        roomsByCategory[room.type] = [];
+                    }
+                    roomsByCategory[room.type].push(room);
+                });
+
                 var availableRoomsHTML = "";
-                if (data.length === 0) {
+                if (Object.keys(roomsByCategory).length === 0) {
                     availableRoomsHTML = "<p>No available rooms for the selected dates.</p>";
                 } else {
                     availableRoomsHTML += "<h2>Available Rooms</h2>";
-                    data.forEach(room => {
-                        availableRoomsHTML += `<p>Room Type: ${room.type}, Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomId=${room.roomId}&roomType=${room.type}&roomPrice=${room.price}&numberOfPersons=${numberOfPersons}">Choose</a></p>`;
-                    });
+                    for (const [type, rooms] of Object.entries(roomsByCategory)) {
+                        availableRoomsHTML += `<h3>${type}</h3>`;
+                        availableRoomsHTML += `<p>${rooms.length} rooms available</p>`;
+                        rooms.forEach(room => {
+                            availableRoomsHTML += `<p>Room Price: ${room.price} - <a href="summary.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomId=${room.roomId}&roomType=${room.type}&roomPrice=${room.price}&numberOfPersons=${numberOfPersons}">Choose</a></p>`;
+                        });
+                    }
                 }
                 document.getElementById("availableRooms").innerHTML = availableRoomsHTML;
             })
@@ -54,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Check-in Date: ${checkInDate}</p>
             <p>Check-out Date: ${checkOutDate}</p>
             <p>Room Type: ${roomType}</p>
-            <p>Room Price: CHF ${roomPrice}</p>
+            <p>Room Price: ${roomPrice}</p>
             <p>Number of Persons: ${numberOfPersons}</p>`;
 
         document.getElementById("customerForm").addEventListener("submit", function(event) {
@@ -110,9 +122,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <p>Check-in Date: ${checkInDate}</p>
             <p>Check-out Date: ${checkOutDate}</p>
             <p>Room Type: ${roomType}</p>
-            <p>Room Price: CHF ${roomPrice}</p>
+            <p>Room Price: ${roomPrice}</p>
             <p>Number of Persons: ${numberOfPersons}</p>
-            <p>Total Price: CHF ${totalPrice}</p>
+            <p>Total Price: ${totalPrice}</p>
             <p>Booking ID: ${bookingId}</p>`;
     }
 });
