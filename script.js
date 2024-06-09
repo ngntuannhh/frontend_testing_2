@@ -7,12 +7,43 @@ document.addEventListener("DOMContentLoaded", function () {
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     }
 
+    function isDateInFuture(date) {
+        var selectedDate = new Date(date);
+        var today = new Date();
+
+        // Set the hours, minutes, seconds and milliseconds to 0 for both dates
+        selectedDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        return selectedDate >= today;
+    }
+
+    function isCheckOutDateAfterCheckInDate(checkInDate, checkOutDate) {
+        var checkIn = new Date(checkInDate);
+        var checkOut = new Date(checkOutDate);
+
+        // Set the hours, minutes, seconds and milliseconds to 0 for both dates
+        checkIn.setHours(0, 0, 0, 0);
+        checkOut.setHours(0, 0, 0, 0);
+
+        return checkOut > checkIn;
+    }
+
     // Handling index.html form submission
     if (document.getElementById("availabilityForm")) {
         document.getElementById("availabilityForm").addEventListener("submit", function (event) {
             event.preventDefault();
             var checkInDate = document.getElementById("checkInDate").value;
             var checkOutDate = document.getElementById("checkOutDate").value;
+            if (!isDateInFuture(checkInDate) || !isDateInFuture(checkOutDate)) {
+                alert("Please select a date in the future.");
+                return;
+            }
+            if (!isCheckOutDateAfterCheckInDate(checkInDate, checkOutDate)) {
+                alert("Check-out date must be after check-in date.");
+                return;
+            }
+
             var numberOfPersons = document.getElementById("numberOfPersons").value;
             window.location.href = `results.html?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&numberOfPersons=${numberOfPersons}`;
         });
